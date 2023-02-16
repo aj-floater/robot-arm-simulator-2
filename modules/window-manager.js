@@ -20,8 +20,6 @@ let window_space_top = top_height + border;
 let isRecording = false;
 
 let windows = [viewport, collisions, biem];
-let current_window = null;
-var side = "";
 
 let mouseMoveHandler = function(event){};
 
@@ -89,7 +87,7 @@ biem_btn.addEventListener("mousedown", function() {
 
   biem_btn.style.cursor = "context-menu"
   mouseMoveHandler = function(event) {
-    handleMouseMovement(event, biem);
+    handleMouseMovement(event, collisions);
   };
   document.addEventListener("mousemove", mouseMoveHandler)
 });
@@ -102,34 +100,23 @@ document.addEventListener("mouseup", function(){
     collisions_btn.style.cursor = "default"
     biem_btn.style.cursor = "default"
 
-    current_window.canvas.style.zIndex=0;
-    if (side=="left"){
-      if (viewport.shown()&&viewport.side=="left") {viewport.side=""; viewport.hide;}
-      if (collisions.shown()&&collisions.side=="left") {collisions.side=""; collisions.hide;}
-      if (biem.shown()&&biem.side=="left") {biem.side=""; biem.hide;}
-    }
-    if (side=="right"){
-      if (viewport.shown()&&viewport.side=="right") {viewport.side=""; viewport.hide;}
-      if (collisions.shown()&&collisions.side=="right") {collisions.side=""; collisions.hide;}
-      if (biem.shown()&&biem.side=="right") {biem.side=""; biem.hide;}
-    }
+    current.canvas.style.zIndex=0;
 
-    current_window.side=side; 
+    
   }
 });
 
 function findWindow(){
-  windows.forEach(function(element) {
-    if (element.shown()) return element;
-  });
+  if (viewport.shown()) return viewport;
+  if (collisions.shown()) return collisions;
+  if (biem.shown()) return biem;
 }
 
 function handleMouseMovement(event, window){
   document.body.style.cursor = "context-menu";
   window.canvas.style.zIndex=1;
   if (event.clientX < button_constant + ws_width/2){
-    side = "left";
-    current_window = findWindow();
+    let current_window = findWindow();
     window.show();
     
     moveWindow(current_window, button_constant+ws_width/2+border*0.5, top_height+border);
@@ -139,8 +126,7 @@ function handleMouseMovement(event, window){
     changeWindowSize(window, ws_width/2-border*1.5, ws_height-border*2);
   }
   else if (event.clientX > button_constant + ws_width/2){
-    side = "right";
-    current_window = findWindow();
+    let current_window = findWindow();
     window.show();
 
     moveWindow(current_window, button_constant+border, top_height+border);
